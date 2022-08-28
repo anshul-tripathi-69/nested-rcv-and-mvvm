@@ -25,15 +25,14 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private final List<ViewType> viewTypeList;
     private final Map<String, Integer> viewTypes;
+    private final ViewTypeImageClickListener onImageClickedListener;
 
-    public MainRecyclerViewAdapter(List<ViewType> viewTypeList) {
+    public MainRecyclerViewAdapter(List<ViewType> viewTypeList, ViewTypeImageClickListener onImageClickListener) {
         assert viewTypeList != null;
-
-        for (ViewType viewType : viewTypeList) {
-            Log.d(TAG, "MainRecyclerViewAdapter: " + viewType.getViewType());
-        }
+        assert onImageClickListener != null;
 
         this.viewTypeList = viewTypeList;
+        this.onImageClickedListener = onImageClickListener;
         viewTypes = new HashMap<>();
         mapViewTypesToInts();
     }
@@ -107,46 +106,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         return viewTypeList.size();
     }
 
-    private static class BannerViewHolder extends RecyclerView.ViewHolder {
-        View view;
-
-        public BannerViewHolder(@NonNull View itemView) {
-            super(itemView);
-            view = itemView;
-        }
-
-        public void bind(ViewType viewType) {
-            Log.d(TAG, "bind --> BannerViewHolder");
-            ImageView bannerImageView = view.findViewById(R.id.img_banner_image);
-
-            Glide
-                .with(view.getContext())
-                .load(viewType.getImageUrl())
-                .into(bannerImageView);
-        }
-    }
-
-    private static class CarouselViewHolder extends RecyclerView.ViewHolder {
-        View view;
-        TextView carouselTitleTv;
-        RecyclerView carouselItemRcv;
-
-        public CarouselViewHolder(@NonNull View itemView) {
-            super(itemView);
-            view = itemView;
-            carouselTitleTv = itemView.findViewById(R.id.carousel_title_tv);
-            carouselItemRcv = itemView.findViewById(R.id.carousel_item_rcv);
-        }
-
-        public void bind(ViewType viewType) {
-            Log.d(TAG, "bind --> CarouselViewHolder");
-            carouselTitleTv.setText(viewType.getTitle());
-            CarouselRecyclerViewAdapter carouselItemRcvAdapter = new CarouselRecyclerViewAdapter(viewType.getViewItems());
-            carouselItemRcv.setAdapter(carouselItemRcvAdapter);
-        }
-    }
-
-    private static class InnerListViewTypeViewHolder extends RecyclerView.ViewHolder {
+    private class InnerListViewTypeViewHolder extends RecyclerView.ViewHolder {
 
         TextView innerListTitleTv;
         RecyclerView innerListRcv;
@@ -161,8 +121,51 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         public void bind(ViewType viewType) {
             innerListTitleTv.setText(viewType.getTitle());
 
-            InnerListRecyclerViewAdapter innerListAdapter = new InnerListRecyclerViewAdapter(viewType.getViewItems());
+            InnerListRecyclerViewAdapter innerListAdapter = new InnerListRecyclerViewAdapter(viewType.getViewItems(), onImageClickedListener);
             innerListRcv.setAdapter(innerListAdapter);
+        }
+    }
+
+    private class BannerViewHolder extends RecyclerView.ViewHolder {
+        View view;
+        ImageView bannerImageView;
+
+        public BannerViewHolder(@NonNull View itemView) {
+            super(itemView);
+            view = itemView;
+            bannerImageView = view.findViewById(R.id.img_banner_image);
+        }
+
+        public void bind(ViewType viewType) {
+            Log.d(TAG, "bind --> BannerViewHolder");
+            bannerImageView.setOnClickListener(v -> {
+                onImageClickedListener.onImageClicked(viewType.getImageUrl());
+            });
+
+            Glide
+                .with(view.getContext())
+                .load(viewType.getImageUrl())
+                .into(bannerImageView);
+        }
+    }
+
+    private class CarouselViewHolder extends RecyclerView.ViewHolder {
+        View view;
+        TextView carouselTitleTv;
+        RecyclerView carouselItemRcv;
+
+        public CarouselViewHolder(@NonNull View itemView) {
+            super(itemView);
+            view = itemView;
+            carouselTitleTv = itemView.findViewById(R.id.carousel_title_tv);
+            carouselItemRcv = itemView.findViewById(R.id.carousel_item_rcv);
+        }
+
+        public void bind(ViewType viewType) {
+            Log.d(TAG, "bind --> CarouselViewHolder");
+            carouselTitleTv.setText(viewType.getTitle());
+            CarouselRecyclerViewAdapter carouselItemRcvAdapter = new CarouselRecyclerViewAdapter(viewType.getViewItems(), onImageClickedListener);
+            carouselItemRcv.setAdapter(carouselItemRcvAdapter);
         }
     }
 }

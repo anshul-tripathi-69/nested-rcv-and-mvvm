@@ -21,10 +21,12 @@ public class CarouselRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
     private static final String TAG = "CarouselRecyclerViewAdapter";
 
     private final List<ViewItems> viewItemsList;
+    private final ViewTypeImageClickListener onImageViewClickListener;
 
-    public CarouselRecyclerViewAdapter(List<ViewItems> viewItemsList) {
+    public CarouselRecyclerViewAdapter(List<ViewItems> viewItemsList, ViewTypeImageClickListener onImageClickListener) {
         Log.d(TAG, "CarouselRecyclerViewAdapter: " + viewItemsList.size());
         this.viewItemsList = viewItemsList;
+        this.onImageViewClickListener = onImageClickListener;
     }
 
     @NonNull
@@ -44,7 +46,7 @@ public class CarouselRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
         return viewItemsList.size();
     }
 
-    private static class CarouselViewHolder extends RecyclerView.ViewHolder {
+    private class CarouselViewHolder extends RecyclerView.ViewHolder {
         ImageView carouselImage;
         View view;
 
@@ -56,6 +58,11 @@ public class CarouselRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVi
 
         public void bind(ViewItems viewItems) {
             Log.d(TAG, "bind: " + viewItems.getImageUrl());
+
+            carouselImage.setOnClickListener(v -> {
+                onImageViewClickListener.onImageClicked(viewItems.getImageUrl());
+            });
+
             Glide
                 .with(carouselImage.getContext())
                 .load(viewItems.getImageUrl())

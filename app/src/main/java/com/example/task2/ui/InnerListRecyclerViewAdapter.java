@@ -18,9 +18,11 @@ import java.util.List;
 
 public class InnerListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<ViewItems> viewItemsList;
+    private final ViewTypeImageClickListener onImageClickListener;
 
-    public InnerListRecyclerViewAdapter(List<ViewItems> viewItemsList) {
+    public InnerListRecyclerViewAdapter(List<ViewItems> viewItemsList, ViewTypeImageClickListener onImageClickListener) {
         this.viewItemsList = viewItemsList;
+        this.onImageClickListener = onImageClickListener;
     }
 
     @NonNull
@@ -40,7 +42,7 @@ public class InnerListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return viewItemsList.size();
     }
 
-    private static final class InnerListViewHolder extends RecyclerView.ViewHolder {
+    private final class InnerListViewHolder extends RecyclerView.ViewHolder {
 
         TextView titleTv;
         ImageView imageView;
@@ -54,6 +56,11 @@ public class InnerListRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
         public void bind(ViewItems viewItems) {
             titleTv.setText(viewItems.getTitle());
+
+            imageView.setOnClickListener(v -> {
+                onImageClickListener.onImageClicked(viewItems.getImageUrl());
+            });
+
             Glide
                 .with(imageView.getContext())
                 .load(viewItems.getImageUrl())
