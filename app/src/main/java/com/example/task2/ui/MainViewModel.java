@@ -12,8 +12,6 @@ import java.util.List;
 
 public class MainViewModel extends ViewModel implements MainViewModelCallbacks {
 
-
-
     private final Repository repository;
     private final MutableLiveData<List<ViewType>> viewTypeList;
 
