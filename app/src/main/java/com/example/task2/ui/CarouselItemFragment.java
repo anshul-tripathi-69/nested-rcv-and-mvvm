@@ -12,11 +12,13 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.task2.R;
+import com.example.task2.databinding.ItemCarouselBinding;
 
 public class CarouselItemFragment extends Fragment {
 
     private String imageUrl;
     private ViewTypeImageClickListener onImageClickListener;
+    private ItemCarouselBinding binding;
 
     public CarouselItemFragment() {
     }
@@ -29,7 +31,8 @@ public class CarouselItemFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.item_carousel, container, false);
+        binding = ItemCarouselBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -41,8 +44,8 @@ public class CarouselItemFragment extends Fragment {
             onImageClickListener.onImageClicked(this.imageUrl);
         });
         Glide
-            .with(view.getContext())
+            .with(binding.getRoot().getContext())
             .load(imageUrl)
-            .into(carouseImageIv);
+            .into(binding.imgBannerIv);
     }
 }

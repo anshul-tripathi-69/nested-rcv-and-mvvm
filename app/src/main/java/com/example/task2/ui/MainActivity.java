@@ -10,27 +10,26 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.task2.R;
+import com.example.task2.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements ViewTypeImageClickListener {
 
     private static final String TAG = "MainActivity";
 
-    MainViewModel viewModel;
-    MainRecyclerViewAdapter mainRcvAdapter;
-    RecyclerView mainRcv;
-    FrameLayout imageDetailFragmentContainer;
+    private ActivityMainBinding binding;
+    private MainViewModel viewModel;
+    private MainRecyclerViewAdapter mainRcvAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
 
         Log.d(TAG, "onCreate: back stack items -> " + getSupportFragmentManager().getBackStackEntryCount());
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainRcv = findViewById(R.id.main_rcv);
-        imageDetailFragmentContainer = findViewById(R.id.detailed_image_fragment_container);
         subscribeToViewModelState();
     }
 
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
                 Log.d(TAG, "onCreate: " + viewTypesList.size());
                 mainRcvAdapter =
                     new MainRecyclerViewAdapter(viewTypesList, this, this);
-                mainRcv.setAdapter(mainRcvAdapter);
+                binding.mainRcv.setAdapter(mainRcvAdapter);
             }
         });
 
@@ -79,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
     }
 
     private void startImageDetailFragment(String imageUrl) {
-        imageDetailFragmentContainer.setVisibility(View.VISIBLE);
-        mainRcv.setVisibility(View.GONE);
+        binding.detailedImageFragmentContainer.setVisibility(View.VISIBLE);
+        binding.mainRcv.setVisibility(View.GONE);
 
         Bundle bundle = new Bundle();
         bundle.putString(ImageDetailFragment.IMAGE_URL_ARG, imageUrl);
@@ -93,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
     }
 
     private void stopImageDetailFragment() {
-        imageDetailFragmentContainer.setVisibility(View.GONE);
-        mainRcv.setVisibility(View.VISIBLE);
+        binding.detailedImageFragmentContainer.setVisibility(View.GONE);
+        binding.mainRcv.setVisibility(View.VISIBLE);
 
         Log.d(TAG, "stopImageDetailFragment: popping back stack, number of items -> " + getSupportFragmentManager().getBackStackEntryCount());
 

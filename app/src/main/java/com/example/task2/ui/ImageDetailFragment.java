@@ -12,12 +12,13 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.example.task2.R;
+import com.example.task2.databinding.FragmentImageDetailBinding;
 
 public class ImageDetailFragment extends Fragment {
 
     public static final String IMAGE_URL_ARG = "image_url_arg";
 
-    ImageView mDetailImageView;
+    private FragmentImageDetailBinding binding;
 
     public ImageDetailFragment() {
         // Required empty public constructor
@@ -32,14 +33,8 @@ public class ImageDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_image_detail, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mDetailImageView = view.findViewById(R.id.image_detail_iv);
+        binding = FragmentImageDetailBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -51,7 +46,7 @@ public class ImageDetailFragment extends Fragment {
             Glide
                 .with(this)
                 .load(imageUrl)
-                .into(mDetailImageView);
+                .into(binding.imageDetailIv);
         }
     }
 }
