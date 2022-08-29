@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.task2.R;
@@ -24,36 +26,31 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private static final String TAG = "MainRecyclerViewAdapter";
 
     private final List<ViewType> viewTypeList;
-    private final Map<String, Integer> viewTypes;
     private final ViewTypeImageClickListener onImageClickedListener;
+    private final FragmentActivity fragmentActivity;
 
-    public MainRecyclerViewAdapter(List<ViewType> viewTypeList, ViewTypeImageClickListener onImageClickListener) {
+    public MainRecyclerViewAdapter(
+        List<ViewType> viewTypeList,
+        @NonNull FragmentActivity fragmentActivity,
+        ViewTypeImageClickListener onImageClickListener
+    ) {
         assert viewTypeList != null;
         assert onImageClickListener != null;
 
         this.viewTypeList = viewTypeList;
         this.onImageClickedListener = onImageClickListener;
-        viewTypes = new HashMap<>();
-        mapViewTypesToInts();
-    }
-
-    private void mapViewTypesToInts() {
-        viewTypes.put("bannerImage", 0);
-        viewTypes.put("carousel", 1);
-        viewTypes.put("vertical_list", 2);
+        this.fragmentActivity = fragmentActivity;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (viewTypeList != null && viewTypeList.size() > 0) {
-            Log.d(TAG, "getItemViewType: " + position);
-            String viewTypeName = viewTypeList.get(position).getViewType();
-            int viewType = viewTypes.getOrDefault(viewTypeList.get(position).getViewType(), -1);
-            Log.d(TAG, "getItemViewType: " + viewTypeName + " " + viewType);
-            return viewType;
-        }
 
-        return -1;
+        switch (viewTypeList.get(position).getViewType()) {
+            case "bannerImage": return 0;
+            case "carousel": return 1;
+            case "vertical_list": return 2;
+            default: return -1;
+        }
     }
 
     @NonNull
@@ -62,21 +59,25 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         switch (viewType) {
             case 0:
                 Log.d(TAG, "onCreateViewHolder: banneritemview");
-                View bannerItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner_image, parent, false);
+                View bannerItemView =
+                    LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner_image, parent, false);
                 return new BannerViewHolder(bannerItemView);
 
             case 1:
                 Log.d(TAG, "onCreateViewHolder: carouseitemview");
-                View carouselItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.carousel_view_type, parent, false);
+                View carouselItemView =
+                    LayoutInflater.from(parent.getContext()).inflate(R.layout.carousel_view_type, parent, false);
                 return new CarouselViewHolder(carouselItemView);
 
             case 2:
-                View innerListItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.inner_list, parent, false);
+                View innerListItemView =
+                    LayoutInflater.from(parent.getContext()).inflate(R.layout.inner_list, parent, false);
                 return new InnerListViewTypeViewHolder(innerListItemView);
 
             // TODO(): figure out what to do with the default statement
             default:
-                bannerItemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner_image, parent, false);
+                bannerItemView =
+                    LayoutInflater.from(parent.getContext()).inflate(R.layout.item_banner_image, parent, false);
                 return new BannerViewHolder(bannerItemView);
         }
     }
@@ -121,7 +122,8 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
         public void bind(ViewType viewType) {
             innerListTitleTv.setText(viewType.getTitle());
 
-            InnerListRecyclerViewAdapter innerListAdapter = new InnerListRecyclerViewAdapter(viewType.getViewItems(), onImageClickedListener);
+            InnerListRecyclerViewAdapter innerListAdapter =
+                new InnerListRecyclerViewAdapter(viewType.getViewItems(), onImageClickedListener);
             innerListRcv.setAdapter(innerListAdapter);
         }
     }
@@ -152,20 +154,23 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.V
     private class CarouselViewHolder extends RecyclerView.ViewHolder {
         View view;
         TextView carouselTitleTv;
-        RecyclerView carouselItemRcv;
+        ViewPager2 carouselItemViewPager;
 
         public CarouselViewHolder(@NonNull View itemView) {
             super(itemView);
             view = itemView;
             carouselTitleTv = itemView.findViewById(R.id.carousel_title_tv);
-            carouselItemRcv = itemView.findViewById(R.id.carousel_item_rcv);
+            carouselItemViewPager = itemView.findViewById(R.id.carousel_item_view_pager);
         }
 
         public void bind(ViewType viewType) {
             Log.d(TAG, "bind --> CarouselViewHolder");
             carouselTitleTv.setText(viewType.getTitle());
-            CarouselRecyclerViewAdapter carouselItemRcvAdapter = new CarouselRecyclerViewAdapter(viewType.getViewItems(), onImageClickedListener);
-            carouselItemRcv.setAdapter(carouselItemRcvAdapter);
+            CarouselViewPagerAdapter carouselViewPagerAdapter = new CarouselViewPagerAdapter(
+                fragmentActivity, viewType.getViewItems(),
+                onImageClickedListener
+            );
+            carouselItemViewPager.setAdapter(carouselViewPagerAdapter);
         }
     }
 }

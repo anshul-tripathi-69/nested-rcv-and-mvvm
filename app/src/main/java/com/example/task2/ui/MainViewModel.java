@@ -14,16 +14,24 @@ public class MainViewModel extends ViewModel implements MainViewModelCallbacks {
 
     private final Repository repository;
     private final MutableLiveData<List<ViewType>> viewTypeList;
+    private final MutableLiveData<String> detailImageUrl;
 
     public MainViewModel() {
         repository = Repository.getInstance();
         viewTypeList = new MutableLiveData<>(Collections.emptyList());
+        detailImageUrl = new MutableLiveData<>(null);
         getApiResponse();
     }
 
     public LiveData<List<ViewType>> getViewTypeList() {
         return viewTypeList;
     }
+
+    public void setDetailImageUrl(String detailImageUrl) {
+        this.detailImageUrl.setValue(detailImageUrl);
+    }
+
+    public LiveData<String> getDetailImageUrl(){ return detailImageUrl; }
 
     @Override
     public void onApiResponse(List<ViewType> response) {

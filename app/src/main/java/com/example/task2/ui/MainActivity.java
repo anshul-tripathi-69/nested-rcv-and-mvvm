@@ -14,6 +14,7 @@ import com.example.task2.R;
 public class MainActivity extends AppCompatActivity implements ViewTypeImageClickListener {
 
     private static final String TAG = "MainActivity";
+
     MainViewModel viewModel;
     MainRecyclerViewAdapter mainRcvAdapter;
     RecyclerView mainRcv;
@@ -27,24 +28,39 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainRcv = findViewById(R.id.main_rcv);
         imageDetailFragmentContainer = findViewById(R.id.detailed_image_fragment_container);
+
         viewModel.getViewTypeList().observe(this, viewTypesList -> {
             if (viewTypesList.size() != 0) {
                 Log.d(TAG, "onCreate: " + viewTypesList.size());
-                mainRcvAdapter = new MainRecyclerViewAdapter(viewTypesList, this);
+                mainRcvAdapter =
+                    new MainRecyclerViewAdapter(viewTypesList, this, this);
                 mainRcv.setAdapter(mainRcvAdapter);
+            }
+        });
+
+        viewModel.getDetailImageUrl().observe(this, detailImageUrl -> {
+            if (detailImageUrl != null) {
+                startImageDetailFragment(detailImageUrl);
+            } else {
+                stopImageDetailFragment();
             }
         });
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-
+    public void onImageClicked(String imageUrl) {
+        viewModel.setDetailImageUrl(imageUrl);
     }
 
     @Override
-    public void onImageClicked(String imageUrl) {
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        viewModel.setDetailImageUrl(null);
+        stopImageDetailFragment();
+    }
+
+    private void startImageDetailFragment(String imageUrl) {
         imageDetailFragmentContainer.setVisibility(View.VISIBLE);
         mainRcv.setVisibility(View.GONE);
 
@@ -58,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
             .commit();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
+    private void stopImageDetailFragment() {
         imageDetailFragmentContainer.setVisibility(View.GONE);
         mainRcv.setVisibility(View.VISIBLE);
-        getSupportFragmentManager().popBackStack();
+
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 }

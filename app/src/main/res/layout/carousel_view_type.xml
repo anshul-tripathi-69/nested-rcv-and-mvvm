@@ -16,12 +16,11 @@
         android:textStyle="bold"
         tools:text="Title" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/carousel_item_rcv"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/carousel_item_view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_carousel" />
+        tools:listitem="@layout/item_carousel"/>
 
 </LinearLayout>
