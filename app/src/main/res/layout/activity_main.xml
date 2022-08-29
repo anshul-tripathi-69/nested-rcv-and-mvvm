@@ -15,6 +15,6 @@
     <FrameLayout
         android:id="@+id/detailed_image_fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="300dp"
         android:visibility="gone" />
 </RelativeLayout>

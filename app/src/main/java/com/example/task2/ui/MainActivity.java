@@ -25,10 +25,36 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        Log.d(TAG, "onCreate: back stack items -> " + getSupportFragmentManager().getBackStackEntryCount());
+
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mainRcv = findViewById(R.id.main_rcv);
         imageDetailFragmentContainer = findViewById(R.id.detailed_image_fragment_container);
+        subscribeToViewModelState();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        stopImageDetailFragment();
+    }
+
+    @Override
+    public void onImageClicked(String imageUrl) {
+        viewModel.setDetailImageUrl(imageUrl);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        viewModel.setDetailImageUrl(null);
+        stopImageDetailFragment();
+    }
+
+    private void subscribeToViewModelState() {
         viewModel.getViewTypeList().observe(this, viewTypesList -> {
             if (viewTypesList.size() != 0) {
                 Log.d(TAG, "onCreate: " + viewTypesList.size());
@@ -48,16 +74,8 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
     }
 
     @Override
-    public void onImageClicked(String imageUrl) {
-        viewModel.setDetailImageUrl(imageUrl);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        viewModel.setDetailImageUrl(null);
-        stopImageDetailFragment();
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void startImageDetailFragment(String imageUrl) {
@@ -77,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
     private void stopImageDetailFragment() {
         imageDetailFragmentContainer.setVisibility(View.GONE);
         mainRcv.setVisibility(View.VISIBLE);
+
+        Log.d(TAG, "stopImageDetailFragment: popping back stack, number of items -> " + getSupportFragmentManager().getBackStackEntryCount());
 
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
