@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements ViewTypeImageClic
 
     private void subscribeToViewModelState() {
         viewModel.getViewTypeList().observe(this, viewTypesList -> {
-            if (viewTypesList.size() != 0) {
+            if (viewTypesList != null && viewTypesList.size() != 0) {
                 Log.d(TAG, "onCreate: " + viewTypesList.size());
                 mainRcvAdapter =
                     new MainRecyclerViewAdapter(viewTypesList, this, this);
